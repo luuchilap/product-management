@@ -1,0 +1,16 @@
+doctype html
+html
+  head
+    title= titlePage 
+
+  body
+    include ../partials/header.pug
+    block main
+    include ../partials/footer.pug
+    //- img(src="/images/images.png", alt="")
+    h1= message
+    - var fullName = "Dang Phuong Nam"
+    - var email = "namtest@gmail.com"
+    div(class="info-user")
+      p  #{fullName}
+      p #{email}
