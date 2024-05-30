@@ -1,7 +1,0 @@
-extends layout/default.pug
-include mixins/box-head.pug
-block main
-  +box-head("Danh sach san pham", "Day la doan mo ta danh sach san pham")
-  ul
-    each item in products
-        li #{item.title},,, #{item.price}
