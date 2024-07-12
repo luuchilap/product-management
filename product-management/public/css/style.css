@@ -18,7 +18,7 @@
     flex-wrap: wrap;
  }
 
- .header .inner-menu > il > li {
+ .header .inner-menu > ul > li {
     margin-left: 20px;
  }
 

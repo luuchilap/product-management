@@ -1,48 +1,59 @@
 extends ../../layouts/default.pug
-
+include ../../mixins/filter-status.pug
+include ../../mixins/search.pug
+include ../../mixins/form-change-multi.pug
+include ../../mixins/alert.pug
 block main
-    h1 Danh sach san pham
+    +alert-success(5000)
 
+    h1 List of items
     .card.mb-3
-        .card-header Bo loc va tim kiem 
+        .card-header Filter status and searching
         .card-body 
             .row
                 .col-6
-                    each item in filterStatus
-                        button(
-                            class= `btn btn-sm ml-1 btn-outline-success ${item.class}`
-                            button-status= item.status
-                        ) #{item.name}
+                   +filter-status(filterStatus) 
                 .col-6
-                    form(id="form-search")
-                        .input-group 
-                            input(
-                                type="text"
-                                placeholder="Nhap tu khoa"
-                                name="keyword"
-                                class="form-control"
-                            )
-                            .input-group-append 
-                                button(
-                                    class="btn btn-success"
-                                    type="submit"
-                                ) Tim
+                    +search(keyword)
     .card.mb-3 
-        .card-header Danh sach 
+        .card-header List
             .card-body
-                table.table.table-hover.table-sm 
+                .row
+                    .col-8 
+                        +form-change-multi(`${prefixAdmin}/products/change-multi?_method=PATCH`)
+                    .col-4 
+                        a(
+                            href=`${prefixAdmin}/products/create`
+                            class="btn btn-outline-success"
+                        )   Add new product
+                //- form change multi
+                table(
+                    class="table table-hover table-sm"
+                    checkbox-multi
+                ) 
                     thead 
                         tr 
-                            th STT 
-                            th Hinh anh 
-                            th Tieu de 
-                            th Gia 
-                            th Trang thai 
-                            th Hanh dong 
+                            th
+                                input(type="checkbox" name="checkall")
+                            //- th Item id
+                            th No 
+                            th Image 
+                            th Title 
+                            th Price
+                            th Position
+                            th Status
+                            th Action
 
                     tbody 
                     each item, index in products
                         tr 
+                            td 
+                                input(
+                                    type="checkbox"
+                                    name="id"
+                                    value=item.id
+                                )
+                            //- td #{item.id}
                             td #{index + 1}
                             td 
                                 img(
@@ -54,10 +65,71 @@ block main
                             td #{item.title}
                             td #{item.price}$
                             td
+                                input(
+                                    type="number"
+                                    value=item.position 
+                                    style="width: 60px"
+                                    min="1"
+                                    name="position"
+                                )
+                            td
                                 if(item.status == "active")
-                                    a(href="#" class="badge badge-success") Hoat dong 
+                                    a(
+                                        href="javascript:;"
+                                        data-status=item.status
+                                        data-id=item.id
+                                        button-change-status
+                                        class="badge badge-success"
+                                    ) Active
+
                                 else 
-                                    a(href="#" class="badge badge-danger") Dung hoat dong 
+                                    a(
+                                        href="javascript:;"
+                                        data-status=item.status
+                                        data-id=item.id
+                                        button-change-status
+                                        class="badge badge-danger"
+                                    ) Inactive
                             td 
-                                button(class="btn btn-warning btn-sm") Sua 
-                                button(class="btn btn-danger btn-sm ml-1") Xoa
+                                a(
+                                    href=`${prefixAdmin}/products/detail/${item.id}`
+                                    class="btn btn-secondary btn-sm"
+                                    ) Detail
+                                a(
+                                    href=`${prefixAdmin}/products/edit/${item.id}`
+                                    class="btn btn-warning btn-sm"
+                                    ) Edit
+                                button(class="btn btn-danger btn-sm ml-1" 
+                                        button-delete
+                                        data-id=item.id) Delete
+    nav
+        ul(class="pagination")
+            if(pagination.currentPage > 1)
+                li(class="page-item")
+                    button(class="page-link"
+                            button-pagination = pagination.currentPage - 1) Previous
+            -for (var i = 1; i <= pagination.totalPage; i++)
+                li(class=`page-item ${pagination.currentPage == i ? "active" : ""}`)
+                    button(class="page-link"
+                            button-pagination=i
+                    ) #{i}
+            if(pagination.currentPage < pagination.totalPage)
+                li(class="page-item")
+                    button(class="page-link"
+                            button-pagination = pagination.currentPage + 1) Next
+    
+    form(
+        action=""
+        method="POST"
+        id="form-change-status"
+        data-path=`${prefixAdmin}/products/change-status`
+    )
+
+    form(
+        action=""
+        method="POST"
+        id="form-delete-item"
+        data-path=`${prefixAdmin}/products/delete`
+    )
+    
+    script(src="/admin/js/product.js")
