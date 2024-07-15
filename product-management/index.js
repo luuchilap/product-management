@@ -21,8 +21,7 @@ const port = process.env.PORT;
 app.use(methodOverride("_method"));
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
-console.log(`${__dirname}`);
+app.use(bodyParser.urlencoded({ extended: false }));
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'pug');
 
