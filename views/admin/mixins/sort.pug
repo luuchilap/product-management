@@ -1,0 +1,17 @@
+mixin sort()
+    div(sort)
+        select(
+            class="form-control"
+            name="sort"
+            sort-select
+        )
+            option(value="position-desc") Position Descending 
+            option(value="position-asc") Position Ascending 
+            option(value="price-desc" selected = true) Price Descending 
+            option(value="price-asc") Price Ascending
+            option(value="title-asc") Title A-Z 
+            option(value="title-desc") Title Z-A 
+        button(
+            class="btn btn-danger mt-2"
+            sort-clear
+        ) Clear

@@ -2,7 +2,7 @@ extends ../../layouts/default.pug
 include ../../mixins/alert.pug
 block main 
     +alert-error(5000)
-    h1(class="mb-4") Add new product
+    h1(class="mb-4") Add new product category
     form(
         action=`${prefixAdmin}/product-category/create`
         id="form-create-product"
@@ -18,7 +18,15 @@ block main
                 name="title"
                 required
             )
-
+        div(class="form-group")
+            label(for="parent_id") Parent Category 
+            input(
+                type="text"
+                class="form-control"
+                id="parent_id"
+                name="title"
+                required
+            )
         div(class="form-group")
             label(for="textarea_desc") Description 
             textarea(
@@ -27,37 +35,6 @@ block main
                 id="textarea_desc"
                 name="description"
                 rows="5"
-            )
-
-        div(class="form-group")
-            label(for="price") Price 
-            input(
-                type="number"
-                class="form-control"
-                id="price"
-                name="price"
-                value="0"
-                min="0"
-            )
-        div(class="form-group")
-            label(for="discount") % Discount 
-            input(
-                type="number"
-                class="form-control"
-                id="discount"
-                name="discountPercentage"
-                value="0"
-                min="0"
-            )
-        div(class="form-group")
-            label(for="stock") Stock 
-            input(
-                type="number"
-                class="form-control"
-                id="stock"
-                name="stock"
-                value="0"
-                min="0"
             )
         div(
             class="form-group"

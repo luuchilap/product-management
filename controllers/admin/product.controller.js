@@ -32,10 +32,20 @@ module.exports.index = async (req, res) => {
         req.query,
         countProducts
       );
+
+
+      //Sort
+      let sort = {};
+      if (req.query.sortKey && req.query.sortValue){
+        sort[req.query.sortKey] = req.query.sortValue;
+      } else {
+        sort.position = "desc";
+      }
+      //End sort
     
     // End Pagination
     const products = await Product.find(find)
-                                  .sort({ position: "desc" })
+                                  .sort(sort)
                                   .limit(objectPagination.limitItems)
                                   .skip(objectPagination.skip);
     res.render("admin/pages/products/index.pug", {
@@ -122,10 +132,9 @@ module.exports.createPost = async(req, res) => {
   } else{
     req.body.position = parseInt(req.body.position);
   }
-  if(req.file){
-    req.body.thumbnail = `/uploads/${req.file.filename}`;
-  }
-  // console.log(req.body);
+  // if(req.file){
+  //   req.body.thumbnail = `/uploads/${req.file.filename}`;
+  // }
   const product = new Product(req.body);
   await product.save();
 
@@ -155,9 +164,9 @@ module.exports.editPatch = async(req, res) => {
   req.body.discountPercentage = parseInt(req.body.discountPercentage);
   req.body.stock = parseInt(req.body.stock);
   req.body.position = parseInt(req.body.position);
-  if(req.file){
-    req.body.thumbnail = `/uploads/${req.file.filename}`;
-  }
+  // if(req.file){
+  //   req.body.thumbnail = `/uploads/${req.file.filename}`;
+  // }
   
   try{
     await Product.updateOne({ _id: req.params.id }, req.body);
