@@ -5,7 +5,7 @@ block main
     h1(class="mb-4") Add new product category
     form(
         action=`${prefixAdmin}/product-category/create`
-        id="form-create-product"
+        id="form-create-product-category"
         method="POST"
         enctype="multipart/form-data"
     )
@@ -24,15 +24,14 @@ block main
                 type="text"
                 class="form-control"
                 id="parent_id"
-                name="title"
-                required
+                name="parent_id"
             )
         div(class="form-group")
-            label(for="textarea_desc") Description 
+            label(for="description") Description 
             textarea(
                 type="text"
                 class="form-control"
-                id="textarea_desc"
+                id="description"
                 name="description"
                 rows="5"
             )

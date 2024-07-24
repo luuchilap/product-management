@@ -5,7 +5,6 @@ const systemConfig = require("../../config/system");
 const filterStatusHelper = require("../../helpers/filterStatus.js");
 const searchHelper = require("../../helpers/search.js");
 const paginationHelper = require("../../helpers/pagination.js");
-const system = require("../../config/system");
 //[GET] /admin/products
 module.exports.index = async (req, res) => { 
     //filterStatus
