@@ -1,11 +1,18 @@
-const systemConfig = require("../../config/system")
+const systemConfig = require("../../config/system");
+const authMiddleware = require("../../middlewares/admin/auth.middleware.js");
 
 const dashboardRoutes = require("./dashboard.route.js");
 const productRoutes = require("./product.route.js");
-const productCategoryRoutes = require("./product-category.route.js")
+const productCategoryRoutes = require("./product-category.route.js");
+const roleRoutes = require("./role.route.js");
+const accountRoutes = require("./account.route.js");
+const authRoutes = require("./auth.route.js");
 module.exports = (app) => {
     const PATH_ADMIN = systemConfig.prefixAdmin;
-    app.use(PATH_ADMIN + '/dashboard', dashboardRoutes); //luon luon them /admin cho trang admin, tranh truong hop trung voi client
-    app.use(PATH_ADMIN + '/products', productRoutes);
-    app.use(PATH_ADMIN + '/product-category', productCategoryRoutes);
+    app.use(PATH_ADMIN + '/dashboard', authMiddleware.requireAuth, dashboardRoutes); //luon luon them /admin cho trang admin, tranh truong hop trung voi client
+    app.use(PATH_ADMIN + '/products', authMiddleware.requireAuth, productRoutes);
+    app.use(PATH_ADMIN + '/product-category', authMiddleware.requireAuth, productCategoryRoutes);
+    app.use(PATH_ADMIN + "/roles", authMiddleware.requireAuth, roleRoutes);
+    app.use(PATH_ADMIN + "/accounts", authMiddleware.requireAuth, accountRoutes);
+    app.use(PATH_ADMIN + "/auth", authRoutes);
 }

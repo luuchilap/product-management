@@ -1,77 +1,44 @@
 extends ../../layouts/default.pug
 include ../../mixins/alert.pug
 include ../../mixins/select-tree.pug
-
 block main 
+    +alert-success(5000)
     +alert-error(5000)
-    h1(class="mb-4") Add new product
+    h1(class="mb-4") Edit category
     form(
-        action=`${prefixAdmin}/products/create`
-        id="form-create-product"
+        action=`${prefixAdmin}/product-category/edit/${data.id}?_method=PATCH`
         method="POST"
         enctype="multipart/form-data"
     )
-        div(class="form-group")
-            label(for="title") Title 
+        div(class="form-group")  
+            label(for="title") Title
             input(
                 type="text"
                 class="form-control"
                 id="title"
                 name="title"
                 required
-            )
-
+                value=data.title
+            ) 
         div(class="form-group")
-            label(for="product_category_id") Category
+            label(for="parent_id") Parent Category
             select(
-                name="product_category_id"
-                id="product_category_id"
+                name="parent_id"
+                id="parent_id"
                 class="form_control"
             )
                 option(value="") --Choose father category--
-                if(category)
-                    +select-tree(category)
-
+                if(records) 
+                    +select-tree(records, 1,  data.parent_id)
         div(class="form-group")
-            label(for="desc") Description 
+            label(for="description") Description 
             textarea(
                 type="text"
-                class="form-control textarea-mce"
-                id="desc"
+                class="form-control"
+                id="description"
                 name="description"
                 rows="5"
-            )
-
-        div(class="form-group")
-            label(for="price") Price 
-            input(
-                type="number"
-                class="form-control"
-                id="price"
-                name="price"
-                value="0"
-                min="0"
-            )
-        div(class="form-group")
-            label(for="discount") % Discount 
-            input(
-                type="number"
-                class="form-control"
-                id="discount"
-                name="discountPercentage"
-                value="0"
-                min="0"
-            )
-        div(class="form-group")
-            label(for="stock") Stock 
-            input(
-                type="number"
-                class="form-control"
-                id="stock"
-                name="stock"
-                value="0"
-                min="0"
-            )
+            ) #{data.description}
         div(
             class="form-group"
             upload-image
@@ -86,7 +53,7 @@ block main
                 upload-image-input
             ) 
             img(
-                src=""
+                src=data.thumbnail
                 upload-image-preview
                 class="image-preview"
             ) 
@@ -99,6 +66,7 @@ block main
                 name="position"
                 placeholder="Auto Increase"
                 min="1"
+                value=data.position
             )
         div(class="form-group form-check form-check-inline")
             input(
@@ -107,7 +75,7 @@ block main
                 id="statusActive"
                 name="status"
                 value="active"
-                checked
+                checked = (data.status == "active" ? true : false)
             )
             label(for="statusActive" class="form-check-label") Active 
 
@@ -118,7 +86,7 @@ block main
                 id="statusInActive"
                 name="status"
                 value="inactive"
-                checked
+                checked = (data.status == "inactive" ? true : false)
             )
             label(for="statusInActive" class="form-check-label") Inactive 
         
@@ -127,4 +95,3 @@ block main
                 type="submit"
                 class="btn btn-primary"
             ) Submit
-    script(src="/admin/js/product.js")

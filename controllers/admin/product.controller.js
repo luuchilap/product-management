@@ -1,10 +1,12 @@
 const Product = require("../../models/product.model");
-
+const ProductCategory = require("../../models/product-category.model");
 const systemConfig = require("../../config/system");
+
 //[GET] /admin/products
 const filterStatusHelper = require("../../helpers/filterStatus.js");
 const searchHelper = require("../../helpers/search.js");
 const paginationHelper = require("../../helpers/pagination.js");
+const createTreeHelper = require("../../helpers/createTree");
 //[GET] /admin/products
 module.exports.index = async (req, res) => { 
     //filterStatus
@@ -55,6 +57,7 @@ module.exports.index = async (req, res) => {
         pagination: objectPagination
       });
 }
+
 //[PATCH] /admin/products/change-status/:status/:id
 module.exports.changeStatus = async(req,res) => {
   // console.log(req.params);
@@ -64,6 +67,7 @@ module.exports.changeStatus = async(req,res) => {
   req.flash('success', 'Status changed successfully');
   res.redirect("back");
 }
+
 //[PATCH] /admin/products/change-multi
 module.exports.changeMulti = async(req, res) => {
   // console.log(req.body);
@@ -92,8 +96,6 @@ module.exports.changeMulti = async(req, res) => {
       for (const item of ids){
         let[id, position] = item.split(", ");
         position = parseInt(position);
-        // console.log(id);
-        // console.log(position);
         await Product.updateOne({ _id: id }, { position: position });
       }
       break;
@@ -102,6 +104,7 @@ module.exports.changeMulti = async(req, res) => {
   }
   res.redirect("back");
 }
+
 //[DELETE] /admin/products/delete/:id
 module.exports.deleteItem = async(req,res) => {
   const id = req.params.id;
@@ -112,12 +115,20 @@ module.exports.deleteItem = async(req,res) => {
   req.flash("success", "Delete successfully!");
   res.redirect("back");
 }
+
 //[GET] /admin/products/create
 module.exports.create = async(req, res) => {
+  let find = {
+    deleted: false
+  };
+  const category = await ProductCategory.find(find);
+  const newCategory = await createTreeHelper.tree(category);
   res.render("admin/pages/products/create", {
     pageTitle: "Add new product",
+    category: newCategory,
   });
 }
+
 //[POST] /admin/products/create
 module.exports.createPost = async(req, res) => {
   
@@ -131,9 +142,6 @@ module.exports.createPost = async(req, res) => {
   } else{
     req.body.position = parseInt(req.body.position);
   }
-  // if(req.file){
-  //   req.body.thumbnail = `/uploads/${req.file.filename}`;
-  // }
   const product = new Product(req.body);
   await product.save();
 
@@ -141,17 +149,18 @@ module.exports.createPost = async(req, res) => {
 }
 
 module.exports.edit = async(req, res) => {
-  // console.log(req.params.id);
   try{
     const find = {
       deleted: false,
       _id: req.params.id
     }
     const product = await Product.findOne(find);
-    // console.log(product);
+    const category = await ProductCategory.find({deleted: false});
+    const newCategory = await createTreeHelper.tree(category);
     res.render("admin/pages/products/edit", {
       pageTitle: "Edit the product",
-      product: product
+      product: product,
+      category: newCategory
     });
   } catch (error){
     res.redirect(`${systemConfig.prefixAdmin}/products`);
@@ -163,31 +172,23 @@ module.exports.editPatch = async(req, res) => {
   req.body.discountPercentage = parseInt(req.body.discountPercentage);
   req.body.stock = parseInt(req.body.stock);
   req.body.position = parseInt(req.body.position);
-  // if(req.file){
-  //   req.body.thumbnail = `/uploads/${req.file.filename}`;
-  // }
-  
   try{
     await Product.updateOne({ _id: req.params.id }, req.body);
     req.flash("success", "Update successfully");
   } catch(error){
     req.flash("error", `${error}`);
-    
-    // req.flash("error", "Cannot update");
   }
 
   res.redirect("back");
 }
 
 module.exports.detail = async(req, res) => {
-  // console.log(req.params.id);
   try{
     const find = {
       deleted: false,
       _id: req.params.id
     }
     const product = await Product.findOne(find);
-    // console.log(product);
     res.render("admin/pages/products/detail", {
       pageTitle: product.title,
       product: product

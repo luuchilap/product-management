@@ -1,10 +1,11 @@
 extends ../../layouts/default.pug
 include ../../mixins/alert.pug
+include ../../mixins/select-tree.pug
+
 block main 
     +alert-error(5000)
     +alert-success(5000)
     h1(class="mb-4") Edit the product
-    //- div #{product}
     form(
         action=`${prefixAdmin}/products/edit/${product.id}?_method=PATCH`
         id="form-edit-product"
@@ -21,7 +22,16 @@ block main
                 value=product.title
                 required
             )
-
+        div(class="form-group")
+            label(for="product_category_id") Category
+            select(
+                name="product_category_id"
+                id="product_category_id"
+                class="form_control"
+            )
+                option(value="") --Choose father category--
+                if(category)
+                    +select-tree(category, 1, product.product_category_id)
         div(class="form-group")
             label(for="desc") Description 
             textarea(

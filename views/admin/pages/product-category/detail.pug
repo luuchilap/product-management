@@ -1,0 +1,31 @@
+extends ../../layouts/default.pug
+
+block main 
+    if (productCategory.title)
+        h1(class="mb-4") #{productCategory.title}
+        
+    if (productCategory.thumbnail)
+        div(class="mb-4")
+            img(
+                src=productCategory.thumbnail
+                style="width: 100px"
+            )
+    
+    if (productCategory.status)
+        div(class="mb-4")
+            span Status:    
+            if (productCategory.status == "active")
+                span(class="badge badge-success") Active 
+            else 
+                span(class="badge badge-danger") Inactive 
+
+    if (productCategory.position)
+        div(class="mb-4") Position: <b>#{productCategory.position}</b>
+
+    if (productCategory.description)
+        div(class="mb-4") Description: <b>!{productCategory.description}</b>
+
+    a(
+        href=`${prefixAdmin}/products/edit/${productCategory.id}`
+        class="btn btn-warning" 
+    ) Edit
