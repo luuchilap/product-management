@@ -65,11 +65,14 @@ block main
     div(class="form-group")
             label(for="role_id") Permission Delegation 
             select(name="role_id" id="role_id" class="form-control")
-                each item in roles
-                    option(
-                        value=item.id
-                        selected=(item.id == account.role_id ? true : false)
-                        ) #{item.title}
+                //- option(
+                //-     value=account.role_id
+                //-     selected=(item.id == account.role_id ? true : false)
+                //-     ) #{role.title}
+                option(
+                    value=account.role_id
+                    selected=(roles.id == account.role_id ? true : false)
+                    ) #{roles.title}
 
     div(class="form-group form-check form-check-inline")
         input(

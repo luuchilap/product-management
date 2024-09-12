@@ -3,6 +3,7 @@ var path = require('path');
 const methodOverride = require("method-override");
 const bodyParser = require("body-parser");
 const flash = require('express-flash');
+const moment = require("moment");
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 require("dotenv").config();
@@ -35,6 +36,7 @@ app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce
 //router -> controller -> model -> controller => view
 //App local variables, cú pháp app.locals dùng để khai báo
 app.locals.prefixAdmin = systemConfig.prefixAdmin;
+app.locals.moment = moment;
 // console.log(__dirname);
 app.use(express.static(`${__dirname}/public`));
 //Routes

@@ -1,4 +1,22 @@
 extends ../../layouts/default.pug
+include ../../mixins/box-head.pug
+include ../../mixins/product-layout.pug
 
 block main 
     h1 Trang chu
+    
+    .section-products-featured.my-5 
+        .container 
+            .row 
+                .col-12 
+                    +box-head("Trending products")
+
+            +product-grid(productsFeatured)
+
+    .section-products-featured.my-5 
+        .container 
+            .row 
+                .col-12 
+                    +box-head("New products")
+                    
+            +product-grid(productsNew)

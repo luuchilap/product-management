@@ -18,7 +18,10 @@ block main
                 span(class="badge badge-success") Active 
             else 
                 span(class="badge badge-danger") Inactive 
-
+                
+    if (productCategory.position)
+        div(class="mb-4") Position: <b>#{productCategory.position}</b>
+        
     if (productCategory.position)
         div(class="mb-4") Position: <b>#{productCategory.position}</b>
 

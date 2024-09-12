@@ -1,5 +1,6 @@
 const Product = require("../../models/product.model");
 const ProductCategory = require("../../models/product-category.model");
+const Account = require("../../models/account.model");
 const systemConfig = require("../../config/system");
 
 //[GET] /admin/products
@@ -8,7 +9,7 @@ const searchHelper = require("../../helpers/search.js");
 const paginationHelper = require("../../helpers/pagination.js");
 const createTreeHelper = require("../../helpers/createTree");
 //[GET] /admin/products
-module.exports.index = async (req, res) => { 
+module.exports.index = async (req, res) => {
     //filterStatus
     const filterStatus = filterStatusHelper(req.query);
     let find = {
@@ -33,8 +34,7 @@ module.exports.index = async (req, res) => {
         req.query,
         countProducts
       );
-
-
+      
       //Sort
       let sort = {};
       if (req.query.sortKey && req.query.sortValue){
@@ -49,6 +49,25 @@ module.exports.index = async (req, res) => {
                                   .sort(sort)
                                   .limit(objectPagination.limitItems)
                                   .skip(objectPagination.skip);
+    for (const product of products){
+      //Creator information
+      const user = await Account.findOne({
+        _id: product.createdBy.account_id
+      });
+      if (user){
+        product.accountFullName = user.fullName;
+      }
+      //Latest updater
+      console.log(product.updatedBy[-1]);
+      const updatedBy = product.updatedBy.slice(-1)[0];
+      if (updatedBy){
+        const userUpdated = await Account.findOne({
+          _id: updatedBy.account_id
+        });
+        updatedBy.accountFullName = userUpdated.fullName;
+      }
+    }
+
     res.render("admin/pages/products/index.pug", {
         pageTitle: "List of items",
         products: products,
@@ -63,7 +82,16 @@ module.exports.changeStatus = async(req,res) => {
   // console.log(req.params);
   const status = req.params.status;
   const id = req.params.id;
-  await Product.updateOne({ _id: id }, { status: status });
+
+  const updatedBy = {
+    account_id: res.locals.user.id,
+    updateAt: new Date()
+  }
+
+  await Product.updateOne({ _id: id }, { 
+    status: status,
+    $push: { updatedBy: updatedBy }
+   });
   req.flash('success', 'Status changed successfully');
   res.redirect("back");
 }
@@ -73,13 +101,25 @@ module.exports.changeMulti = async(req, res) => {
   // console.log(req.body);
   const type = req.body.type;
   const ids = req.body.ids.split(", ");
+
+  const updatedBy = {
+    account_id: res.locals.user.id,
+    updateAt: new Date()
+  }
+
   switch (type) {
     case "active":
-      await Product.updateMany({ _id: { $in: ids } }, { status: "active" });
+      await Product.updateMany({ _id: { $in: ids } }, { 
+        status: "active",
+        $push: { updatedBy: updatedBy }
+       });
       req.flash("success", `Update ${ids.length} products successfully`);
       break;
     case "inactive":
-      await Product.updateMany({ _id: { $in: ids } }, { status: "inactive" });
+      await Product.updateMany({ _id: { $in: ids } }, { 
+        status: "inactive",
+        $push: { updatedBy: updatedBy }
+      });
       req.flash("success", `Update ${ids.length} products successfully`);
       break;
     case "delete-all":
@@ -96,7 +136,10 @@ module.exports.changeMulti = async(req, res) => {
       for (const item of ids){
         let[id, position] = item.split(", ");
         position = parseInt(position);
-        await Product.updateOne({ _id: id }, { position: position });
+        await Product.updateOne({ _id: id }, { 
+          position: position,
+          $push: { updatedBy: updatedBy }
+         });
       }
       break;
     default:
@@ -110,7 +153,11 @@ module.exports.deleteItem = async(req,res) => {
   const id = req.params.id;
   await Product.updateOne({ _id: id }, { 
     deleted: true,
-    deletedAt: new Date() 
+    // 
+    deletedBy: {
+      account_id: res.locals.user.id,
+      deletedAt: new Date(),
+    }
   });
   req.flash("success", "Delete successfully!");
   res.redirect("back");
@@ -118,6 +165,7 @@ module.exports.deleteItem = async(req,res) => {
 
 //[GET] /admin/products/create
 module.exports.create = async(req, res) => {
+  console.log(res.locals.user);
   let find = {
     deleted: false
   };
@@ -142,6 +190,11 @@ module.exports.createPost = async(req, res) => {
   } else{
     req.body.position = parseInt(req.body.position);
   }
+
+  req.body.createdBy = {
+    account_id: res.locals.user.id
+  };
+
   const product = new Product(req.body);
   await product.save();
 
@@ -173,7 +226,14 @@ module.exports.editPatch = async(req, res) => {
   req.body.stock = parseInt(req.body.stock);
   req.body.position = parseInt(req.body.position);
   try{
-    await Product.updateOne({ _id: req.params.id }, req.body);
+    const updatedBy = {
+      account_id: res.locals.user.id,
+      updateAt: new Date()
+    }
+    await Product.updateOne({ _id: req.params.id }, {
+      ...req.body,
+      $push: { updatedBy: updatedBy }
+    });
     req.flash("success", "Update successfully");
   } catch(error){
     req.flash("error", `${error}`);
@@ -183,12 +243,31 @@ module.exports.editPatch = async(req, res) => {
 }
 
 module.exports.detail = async(req, res) => {
+  // for (const product of products){
+  //   const user = await Account.findOne({
+  //     _id: product.createdBy.account_id
+  //   });
+  //   if (user){
+  //     product.accountFullName = user.fullName;
+  //   }
+  // }
   try{
     const find = {
       deleted: false,
       _id: req.params.id
     }
     const product = await Product.findOne(find);
+    // console.log(product.createdBy.account_id);
+    const p_category = await ProductCategory.findOne({
+      _id: product.product_category_id
+    });
+    if (p_category){
+      product.product_category_id = p_category.title
+    }
+    // if (user){
+    //   product.accountFullName = user.fullName;
+    // }
+    console.log(product);
     res.render("admin/pages/products/detail", {
       pageTitle: product.title,
       product: product

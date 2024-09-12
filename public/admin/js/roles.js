@@ -5,6 +5,7 @@ if(tablePermission){
 
     buttonSubmit.addEventListener("click", () => {
 
+        alert("Ok");
         let permissions = [];
 
         const rows = tablePermission.querySelectorAll("[data-name]");
@@ -21,10 +22,15 @@ if(tablePermission){
                 })
             } else {
                 inputs.forEach((input, index) => {
+                    // console.log(input);
                     const checked = input.checked;
                     if(checked){
-                        permissions[index].permissions.push(name);
+                        // permissions[index].permissions.push(name);
+                        // console.log(`Permissions index: ${permissions[index]}`);
                         
+                        // console.log(index);
+                        // console.log(`Permissions: ${permissions}`);
+                        // console.log(`Permissions index: ${permissions[index]}`)
                     }
                 });
             }

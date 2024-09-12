@@ -32,7 +32,14 @@ module.exports.index = async (req, res) => {
     });
 }
 
-
+//[PATCH] /admin/product-category/change-status/:status/:id
+module.exports.changeStatus = async(req,res) => {
+  const status = req.params.status;
+  const id = req.params.id;
+  await ProductCategory.updateOne({ _id: id }, { status: status });
+  req.flash('success', 'Status changed successfully');
+  res.redirect("back");
+}
 
 //[GET] /admin/product-category/create
 module.exports.create = async (req, res) => {
@@ -51,8 +58,14 @@ module.exports.create = async (req, res) => {
 };
 //[POST] /admin/product-category/create
 module.exports.createPost = async(req, res) => {
-  const count = await ProductCategory.countDocuments();
-    if(req.body.position == ""){
+  // const permissions = res.locals.role.permissions;
+  // if (permissions.includes("products-category_create")){
+  //   console.log("Co quyen");
+  // } else{
+  //   res.send("403");
+  //   return;
+  // }
+  if(req.body.position == ""){
     const count = await ProductCategory.countDocuments();
     req.body.position = count + 1;
   } else{

@@ -29,5 +29,5 @@ router.patch(
             controller.editPatch);
 
 router.delete("/delete/:id", controller.deleteCategory);
-
+router.patch('/change-status/:status/:id', controller.changeStatus);
 module.exports = router;

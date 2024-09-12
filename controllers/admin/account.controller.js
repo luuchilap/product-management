@@ -105,8 +105,12 @@ module.exports.detail = async (req, res) => {
     const account = await Account.findOne({
         deleted: false,
     });
+    const roles = await Role.find({
+        deleted: false,
+    });
 
     res.render("admin/pages/accounts/detail", {
-        account: account
+        account: account,
+        roles: roles,
     });
 };
