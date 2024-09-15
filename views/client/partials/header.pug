@@ -34,5 +34,13 @@ header.header
                             -const pathProduct = "/products";
                             a(href=pathProduct) San pham
                                 +sub-menu(layoutProductsCategory, pathProduct)
-                                        
-
+                        li 
+                            a(href="/cart") Cart (#{miniCart? miniCart.totalQuantity : 0})
+                        if(user)
+                            li 
+                                a(href="/user/logout") Log out
+                        else
+                            li
+                                a(href="/user/login") Log in
+                            li 
+                                a(href="/user/register") Register
