@@ -5,6 +5,7 @@ const ForgotPassword = require("../../models/forgot-password.model");
 const md5 = require("md5");
 
 const generateHelper = require("../../helpers/generate");
+const sendMailHelper = require("../../helpers/sendMail");
 //[GET] /user/register
 module.exports.register = async(req, res) => {
     res.render("client/pages/user/register", {
@@ -111,7 +112,15 @@ module.exports.forgotPasswordPost = async(req, res) => {
 
     await forgotPassword.save();
 
+
     //If the email is valid, send OTP messages to E-mail
+    const subject = "Ma OTP xac minh"
+    const html = `
+        Ma OTP de lay lai mat khau la <b style="color: green;">${otp}</b>
+    `;
+    sendMailHelper.sendMail(email, subject, html);
+
+
     res.redirect(`/user/password/otp?email=${email}`); // "/ = view"
 
 }
@@ -123,4 +132,47 @@ module.exports.otpPassword = async(req, res) => {
         pageTitle: "Nhap ma OTP",
         email: email,
     });
+}
+
+// [POST] /user/password/otp
+module.exports.otpPasswordPost = async(req, res) => {
+    const email = req.body.email;
+    const otp = req.body.otp;
+    const result = await ForgotPassword.findOne({
+        email: email,
+        otp: otp
+    });
+
+    if (!result){
+        req.flash("error", "Invalid OTP");
+        res.redirect("back");
+        return;
+    }
+
+    const user = await User.findOne({
+        email: email
+    });
+
+    res.cookie("tokenUser", user.tokenUser);
+
+
+    res.redirect("/user/password/reset");
+}
+
+module.exports.resetPassword = async(req, res) =>{
+    res.render("client/pages/user/reset-password", {
+        pageTitle: "Doi mat khau",
+    })
+}
+
+module.exports.resetPasswordPost = async(req, res) =>{
+    const password = req.body.password;
+    const tokenUser = req.cookies.tokenUser;
+
+    await User.updateOne({
+        tokenUser: tokenUser
+    }, {
+        password: md5(password)
+    })
+    res.redirect("/");
 }
