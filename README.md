@@ -18,3 +18,5 @@ Enter package.json file, write:
 npm start
 
 npm install mongoose
+
+npm install dotenv
