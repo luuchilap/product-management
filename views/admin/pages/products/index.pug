@@ -63,7 +63,7 @@ block main
 
                     tbody 
                     each item, index in products
-                        tr 
+                        tr(class="product-info")
                             td 
                                 input(
                                     type="checkbox"
@@ -79,8 +79,8 @@ block main
                                     width="100px"
                                     height="auto"
                                 )
-                            td #{item.title}
-                            td #{item.price}$
+                            td(class="product-title") #{item.title}
+                            td(class="product-price") #{item.price}$
                             td
                                 input(
                                     type="number"
@@ -112,7 +112,7 @@ block main
                                 p 
                                     +formatDateTime(item.createdBy.createdAt)
 
-                            td 
+                            td(class="product-update")
                                 - const updatedBy = item.updatedBy.slice(-1)[0];
                                 if(updatedBy)
                                     p #{updatedBy.accountFullName}

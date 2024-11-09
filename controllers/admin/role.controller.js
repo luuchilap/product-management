@@ -67,6 +67,7 @@ module.exports.permissions = async (req, res) => {
 }
 //[PATCH] /admin/roles/permissions
 module.exports.permissionsPatch = async (req, res) => {
+  // console.log(req.body);
   const permissions = JSON.parse(req.body.permissions); //anything that sent via form => req.body
   for (const item of permissions){
     await Role.updateOne({ _id: item.id }, { permissions: item.permissions })
