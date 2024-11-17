@@ -92,7 +92,7 @@ module.exports.delete = async(req, res) => {
 module.exports.update = async(req, res) => {
     const cartId = req.cookies.cartId;
     const productId = req.params.productId;
-    const quantity = req.params.quantity;
+    const quantity = req.body.quantity;
 
     await Cart.updateOne({
         _id: cartId,
