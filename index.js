@@ -6,6 +6,9 @@ const flash = require('express-flash');
 const moment = require("moment");
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+
+const { createServer } = require('node:http');
+const { Server } = require('socket.io');
 require("dotenv").config();
 const database = require("./config/database.js")
 
@@ -19,6 +22,14 @@ database.connect();
 
 const app = express();
 const port = process.env.PORT;
+
+const server = createServer(app);
+const io = new Server(server);
+global._io = io;
+
+// SocketIO
+
+//End SocketIO
 
 app.use(methodOverride("_method"));
 
@@ -44,6 +55,9 @@ routeAdmin(app);
 route(app);
 
 
-app.listen(port, () => {
+// app.listen(port, () => {
+//     console.log(`App listening on prt ${port}`);
+// });
+server.listen(port, () => {
     console.log(`App listening on prt ${port}`);
 });
