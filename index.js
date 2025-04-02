@@ -23,17 +23,17 @@ database.connect();
 const app = express();
 const port = process.env.PORT;
 
+
+// SocketIO
 const server = createServer(app);
 const io = new Server(server);
 global._io = io;
-
-// SocketIO
 
 //End SocketIO
 
 app.use(methodOverride("_method"));
 
-// parse application/x-www-form-urlencoded
+// parse application/x-www-form-urlencoded -> để parser form
 app.use(bodyParser.urlencoded({ extended: false }));
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'pug');
