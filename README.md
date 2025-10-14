@@ -20,3 +20,16 @@ npm start
 npm install mongoose
 
 npm install dotenv
+
+
+Admin:
+t1@gmail.com
+t1
+
+
+User:
+luuchilap@gmail.com
+lap20040106
+
+le@gmail.com
+123

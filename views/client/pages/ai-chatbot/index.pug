@@ -1,0 +1,54 @@
+extends ../../layouts/default
+
+block main 
+    .chat-container
+        // Header
+        .chat-header
+            .header-content
+                .header-title
+                    h1 🛍️ Product Assistant
+                    p Ask me about our products!
+                .header-actions
+                    button#resetBtn.reset-btn(title="Reset conversation") 🔄 Reset
+                    .status-indicator#statusIndicator
+                        span.status-dot
+                        span.status-text Connecting...
+
+        // Messages Container
+        .messages-container#messagesContainer
+            .welcome-message
+                .bot-avatar 🤖
+                .message-content
+                    p Hello! I'm your product assistant. I can help you:
+                    ul
+                        li Search for products by name
+                        li Find the cheapest or most expensive items
+                        li Compare product prices
+                        li Get detailed product information
+                    p Try asking: "Show me all iPhones" or "What's the cheapest laptop?" or "Show me the most discount product"
+
+        // Input Area
+        .input-container
+            // Thinking Indicator
+            .thinking-indicator#thinkingIndicator
+                .thinking-dot
+                span Assistant is thinking...
+            .input-wrapper
+                input#messageInput(
+                    type="text" 
+                    placeholder="Type your message here..." 
+                    maxlength="500"
+                    autocomplete="off"
+                )
+                button#sendBtn.send-btn(disabled)
+                    span.send-icon ➤
+            .input-footer
+                span.customer-name
+                    | 👤 
+                    span#customerName= user.fullName
+                span.character-count
+                    span#charCount 0
+                    | /500
+
+    link(rel="stylesheet" href="/css/ai-chatbot.css")
+    script(src="/js/ai-chatbot.js")
